@@ -1,13 +1,16 @@
 #include <stdlib.h>
-
-#include "siphash.h"
+#include <string.h>
+#include <openssl/evp.h>
 
 static char _key[16];
 
 typedef struct mhash_entry_s 
 {
     char *key;
+    size_t key_len;
     char *value;
+    size_t value_len;
+    mhash_entry_t *next;
 } mhash_entry_t;
 
 struct mhash_table_s
@@ -47,12 +50,39 @@ void mhash_delete(struct mhash_table_s *hash_table, char *key)
 
 }
 
-void mhash_set(struct mhash_table_s *hash_table, char *key, void *value)
+void mhash_put(struct mhash_table_s *hash_table, void *key, size_t key_len, void *value, size_t value_len)
 {
-    uint64_t hash = mhash_calculate_hash(key);
+    uint64_t hash = mhash_calculate_hash(value, value_len);
+    size_t idx = hash % hash_table->bucket_count;
 
+    mhash_entry_t *e = hash_table->buckets[idx];
+    while (e)
+    {
+        if (e->key_len == key_len && memcmp(e->key, key, key_len) == 0)
+        {
+            /* collision */
+        }
+        e = e->next;
+    }
 
+    /* new entry */
+    mhash_entry_t *ne = malloc(sizeof(*ne));
+    if (!ne) return 0;
 
+    /* allocate key */
+    ne->key = malloc(key_len);
+    if (!ne->key) { free(ne); return 0; }
+    memcpy(ne->key, key, key_len);
+    ne->key_len = key_len;
 
+    /* allocate value */
+    ne->value = malloc(value_len);
+    if (!ne->value) { free(ne->key); free(ne); return 0; }
+    memcpy(ne->value, value, value_len);
+    ne->value_len = value_len;
 
+    /* set new entry to the bucket */
+    hash_table->buckets[idx] = ne;
+
+    return;
 }
