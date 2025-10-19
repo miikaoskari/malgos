@@ -26,12 +26,23 @@ size_t mhash_init_key(char *key)
     return sizeof(_key);
 }
 
-uint64_t mhash_calculate_hash(char *key)
+uint64_t mhash_calculate_hash(const char *value, const value_len)
 {
-    /* siphash-2-4 */
-    uint64_t hash_result = 0;
-    siphash((const uint8_t *)key, strlen(key), (const uint8_t *)_key, (uint8_t *)&hash_result, sizeof(hash_result));
-    return hash_result;
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+    if (!ctx) return 1;
+    
+    uint64_t out;
+    size_t outlen;
+
+    EVP_MAC *sip = EVP_MAC_fetch(NULL, "SIPHASH", NULL);
+
+    EVP_MAC_init(ctx, NULL, 0, NULL);
+    EVP_MAC_update(ctx, value, value_len);
+
+    size_t outl = 0;
+    EVP_MAC_final(ctx, out, &outl, outlen);
+
+    return out;
 }
 
 void mhash_create_table()
