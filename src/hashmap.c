@@ -4,14 +4,16 @@
 
 static char _key[16];
 
-typedef struct mhash_entry_s 
+typedef struct mhash_entry_s mhash_entry_t;
+
+struct mhash_entry_s 
 {
     char *key;
     size_t key_len;
     char *value;
     size_t value_len;
     mhash_entry_t *next;
-} mhash_entry_t;
+};
 
 typedef struct mhash_table_s
 {
