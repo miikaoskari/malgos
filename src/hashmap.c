@@ -29,26 +29,44 @@ static size_t mhash_init_key(mhash_table_t *ht, char *key)
     return sizeof(ht->key);
 }
 
-static inline uint64_t mhash_calculate_hash(const char *value, const value_len)
+static size_t mhash_init_siphash_ctx(mhash_table_t *ht)
 {
-    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
-    if (!ctx) return 1;
-    
-    uint64_t out;
+    EVP_MAC *sip = EVP_MAC_fetch(NULL, "SIPHASH", NULL);
+    EVP_MAC_CTX *ctx = EVP_MAC_CTX_new(sip);
+
+    if (!EVP_MAC_init(ctx, ht->key, sizeof(ht->key), NULL))
+    {
+        return 1;
+    }
+}
+
+static inline unsigned char mhash_calculate_hash(mhash_table_t *ht, const char *value, const size_t value_len)
+{
+    unsigned char out;
     size_t outlen;
 
-    EVP_MAC *sip = EVP_MAC_fetch(NULL, "SIPHASH", NULL);
-
-    EVP_MAC_init(ctx, NULL, 0, NULL);
-    EVP_MAC_update(ctx, value, value_len);
-
-    size_t outl = 0;
-    EVP_MAC_final(ctx, out, &outl, outlen);
+    EVP_MAC_update(ht->ctx, value, value_len);
+    EVP_MAC_final(ht->ctx, out, &outlen, sizeof(out));
 
     return out;
 }
 
-void mhash_create_table()
+mhash_table_t mhash_create_table(char *key, size_t table_size)
+{
+    mhash_table_t ht = { 0 };
+
+    ht.bucket_count = table_size;
+    ht.buckets = calloc(ht.bucket_count, sizeof(*ht.buckets));
+
+    if (!ht.buckets) return ht;
+
+    mhash_init_key(&ht, key);
+    mhash_init_siphash_ctx(&ht);
+
+    return ht;
+}
+
+void mhash_destroy_table(mhash_table_t ht)
 {
 
 }
