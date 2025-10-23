@@ -71,20 +71,20 @@ void mhash_destroy_table(mhash_table_t ht)
 
 }
 
-void mhash_get(struct mhash_table_s *hash_table, char *key, size_t key_len)
+void mhash_get(mhash_table_t *hash_table, char *key, size_t key_len)
 {
     uint64_t hash = mhash_calculate_hash(key, key_len);
     size_t idx = hash % hash_table->bucket_count;
 }
 
-void mhash_delete(struct mhash_table_s *hash_table, char *key)
+void mhash_delete(mhash_table_t *hash_table, char *key)
 {
 
 }
 
-int mhash_put(struct mhash_table_s *hash_table, const void *key, const size_t key_len, const void *value, const size_t value_len)
+int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, const void *value, const size_t value_len)
 {
-    uint64_t hash = mhash_calculate_hash(key, key_len);
+    uint64_t hash = mhash_calculate_hash(hash_table, key, key_len);
     size_t idx = hash % hash_table->bucket_count;
 
     mhash_entry_t *e = hash_table->buckets[idx];
