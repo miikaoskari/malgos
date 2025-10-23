@@ -2,8 +2,6 @@
 #include <string.h>
 #include <openssl/evp.h>
 
-static char _key[16];
-
 typedef struct mhash_entry_s mhash_entry_t;
 
 struct mhash_entry_s 
@@ -19,13 +17,16 @@ typedef struct mhash_table_s
 {
     size_t bucket_count;
     mhash_entry_t **buckets;
+    unsigned char key[16];
+
+    EVP_MAC_CTX *ctx;
 } mhash_table_t;
 
-size_t mhash_init_key(char *key)
+static size_t mhash_init_key(mhash_table_t *ht, char *key)
 {
     if (!key) return 0;
-    memcpy(_key, key, sizeof(_key));
-    return sizeof(_key);
+    memcpy(ht->key, key, sizeof(ht->key));
+    return sizeof(ht->key);
 }
 
 static inline uint64_t mhash_calculate_hash(const char *value, const value_len)
