@@ -94,7 +94,17 @@ mhash_entry_t *mhash_get(mhash_table_t *hash_table, char *key, size_t key_len)
 
 int mhash_delete(mhash_table_t *hash_table, char *key, size_t key_len)
 {
+    mhash_entry_t *e = mhash_get(hash_table, key, key_len);
 
+    if (e)
+    {
+        free(e->value);
+        free(e->key);
+        free(e);
+        return 0;
+    }
+
+    return 1; 
 }
 
 int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, const void *value, const size_t value_len)
