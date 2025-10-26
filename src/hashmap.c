@@ -46,7 +46,7 @@ static inline unsigned char mhash_calculate_hash(mhash_table_t *ht, const char *
     size_t outlen;
 
     EVP_MAC_update(ht->ctx, value, value_len);
-    EVP_MAC_final(ht->ctx, out, &outlen, sizeof(out));
+    EVP_MAC_final(ht->ctx, &out, &outlen, sizeof(out));
 
     return out;
 }
@@ -71,13 +71,28 @@ void mhash_destroy_table(mhash_table_t ht)
 
 }
 
-void mhash_get(mhash_table_t *hash_table, char *key, size_t key_len)
+mhash_entry_t *mhash_get(mhash_table_t *hash_table, char *key, size_t key_len)
 {
-    uint64_t hash = mhash_calculate_hash(key, key_len);
+    uint64_t hash = mhash_calculate_hash(hash_table, key, key_len);
     size_t idx = hash % hash_table->bucket_count;
+
+    mhash_entry_t *e = hash_table->buckets[idx];
+    while (e)
+    {
+        if (e->key_len == key_len && memcmp(e->key, key, key_len) == 0)
+        {
+            /* key found! */
+            return e;
+        }
+
+        e = e->next;
+    }
+
+    /* key not found */
+    return NULL;
 }
 
-void mhash_delete(mhash_table_t *hash_table, char *key)
+int mhash_delete(mhash_table_t *hash_table, char *key, size_t key_len)
 {
 
 }
