@@ -82,9 +82,29 @@ mhash_table_t *mhash_create_table(char *key, size_t table_size)
     return ht;
 }
 
-void mhash_destroy_table(mhash_table_t ht)
+void mhash_destroy_table(mhash_table_t *ht)
 {
-
+    if (ht->buckets)
+    {
+        for (size_t i = 0; i < ht->bucket_count; ++i)
+        {
+            mhash_entry_t *e = ht->buckets[i];
+            while (e)
+            {
+                mhash_entry_t *next = e->next;
+                free(e->key);
+                free(e->value);
+                free(e);
+                e = next;
+            }
+        }
+        free(ht->buckets);
+    }
+    if (ht->ctx)
+    {
+        EVP_MAC_CTX_free(ht->ctx);
+    }
+    return;
 }
 
 mhash_entry_t *mhash_get(mhash_table_t *hash_table, char *key, size_t key_len)
