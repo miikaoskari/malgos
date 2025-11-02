@@ -32,19 +32,24 @@ static size_t mhash_init_key(mhash_table_t *ht, char *key)
 static size_t mhash_init_siphash_ctx(mhash_table_t *ht)
 {
     EVP_MAC *sip = EVP_MAC_fetch(NULL, "SIPHASH", NULL);
-    EVP_MAC_CTX *ctx = EVP_MAC_CTX_new(sip);
+    if (!sip) return 1;
+    ht->ctx = EVP_MAC_CTX_new(sip);
 
-    if (!EVP_MAC_init(ctx, ht->key, sizeof(ht->key), NULL))
+    if (!ht->ctx)
     {
+        EVP_MAC_CTX_free(ht->ctx);
         return 1;
     }
+
+    return 0;
 }
 
 static inline unsigned char mhash_calculate_hash(mhash_table_t *ht, const char *value, const size_t value_len)
 {
-    unsigned char out;
-    size_t outlen;
+    unsigned char out = 0;
+    size_t outlen = 0;
 
+    EVP_MAC_init(ht->ctx, ht->key, sizeof(ht->key), NULL);
     EVP_MAC_update(ht->ctx, value, value_len);
     EVP_MAC_final(ht->ctx, &out, &outlen, sizeof(out));
 
