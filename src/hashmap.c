@@ -51,17 +51,33 @@ static inline unsigned char mhash_calculate_hash(mhash_table_t *ht, const char *
     return out;
 }
 
-mhash_table_t mhash_create_table(char *key, size_t table_size)
+mhash_table_t *mhash_create_table(char *key, size_t table_size)
 {
-    mhash_table_t ht = { 0 };
+    mhash_table_t *ht = calloc(1, sizeof(*ht));
+    if (!ht) return NULL;
 
-    ht.bucket_count = table_size;
-    ht.buckets = calloc(ht.bucket_count, sizeof(*ht.buckets));
+    ht->bucket_count = table_size;
+    ht->buckets = calloc(ht->bucket_count, sizeof(*ht->buckets));
 
-    if (!ht.buckets) return ht;
+    if (!ht->buckets)
+    {
+        free(ht);
+        return NULL;
+    }
 
-    mhash_init_key(&ht, key);
-    mhash_init_siphash_ctx(&ht);
+    if (mhash_init_key(ht, key) == 0)
+    {
+        free(ht->buckets);
+        free(ht);
+        return NULL;
+    }
+    
+    if (mhash_init_siphash_ctx(ht) != 0)
+    {
+        free(ht->buckets);
+        free(ht);
+        return NULL;
+    }
 
     return ht;
 }
