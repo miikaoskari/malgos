@@ -1,10 +1,10 @@
+#include <openssl/evp.h>
 #include <stdlib.h>
 #include <string.h>
-#include <openssl/evp.h>
 
 typedef struct mhash_entry_s mhash_entry_t;
 
-struct mhash_entry_s 
+struct mhash_entry_s
 {
     char *key;
     size_t key_len;
@@ -24,7 +24,8 @@ typedef struct mhash_table_s
 
 static size_t mhash_init_key(mhash_table_t *ht, char *key)
 {
-    if (!key) return 0;
+    if (!key)
+        return 0;
     memcpy(ht->key, key, sizeof(ht->key));
     return sizeof(ht->key);
 }
@@ -32,7 +33,8 @@ static size_t mhash_init_key(mhash_table_t *ht, char *key)
 static size_t mhash_init_siphash_ctx(mhash_table_t *ht)
 {
     EVP_MAC *sip = EVP_MAC_fetch(NULL, "SIPHASH", NULL);
-    if (!sip) return 1;
+    if (!sip)
+        return 1;
     ht->ctx = EVP_MAC_CTX_new(sip);
 
     if (!ht->ctx)
@@ -59,7 +61,8 @@ static inline unsigned char mhash_calculate_hash(mhash_table_t *ht, const char *
 mhash_table_t *mhash_create_table(char *key, size_t table_size)
 {
     mhash_table_t *ht = calloc(1, sizeof(*ht));
-    if (!ht) return NULL;
+    if (!ht)
+        return NULL;
 
     ht->bucket_count = table_size;
     ht->buckets = calloc(ht->bucket_count, sizeof(*ht->buckets));
@@ -76,7 +79,7 @@ mhash_table_t *mhash_create_table(char *key, size_t table_size)
         free(ht);
         return NULL;
     }
-    
+
     if (mhash_init_siphash_ctx(ht) != 0)
     {
         free(ht->buckets);
@@ -145,10 +148,11 @@ int mhash_delete(mhash_table_t *hash_table, char *key, size_t key_len)
         return 0;
     }
 
-    return 1; 
+    return 1;
 }
 
-int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, const void *value, const size_t value_len)
+int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, const void *value,
+              const size_t value_len)
 {
     uint64_t hash = mhash_calculate_hash(hash_table, key, key_len);
     size_t idx = hash % hash_table->bucket_count;
@@ -160,7 +164,8 @@ int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, 
         {
             /* same key! replace with new value */
             char *new_value = realloc(e->value, value_len);
-            if (!new_value) return 1;
+            if (!new_value)
+                return 1;
             e->value = new_value;
             memcpy(e->value, value, value_len);
             e->value_len = value_len;
@@ -173,17 +178,27 @@ int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, 
 
     /* new entry */
     mhash_entry_t *ne = malloc(sizeof(*ne));
-    if (!ne) return 1;
+    if (!ne)
+        return 1;
 
     /* allocate key */
     ne->key = malloc(key_len);
-    if (!ne->key) { free(ne); return 1; }
+    if (!ne->key)
+    {
+        free(ne);
+        return 1;
+    }
     memcpy(ne->key, key, key_len);
     ne->key_len = key_len;
 
     /* allocate value */
     ne->value = malloc(value_len);
-    if (!ne->value) { free(ne->key); free(ne); return 1; }
+    if (!ne->value)
+    {
+        free(ne->key);
+        free(ne);
+        return 1;
+    }
     memcpy(ne->value, value, value_len);
     ne->value_len = value_len;
 
