@@ -4,6 +4,7 @@ target_sources(malgos
     PRIVATE
         hashmap.c
         piecetable.cpp
+        common/hash.c
 )
 
 target_include_directories(malgos

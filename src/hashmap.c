@@ -1,28 +1,10 @@
 #include <openssl/evp.h>
 #include <stdlib.h>
 #include <string.h>
+#include "malgos/hashmap.h"
+#include "malgos/hash.h"
 
-typedef struct mhash_entry_s mhash_entry_t;
-
-struct mhash_entry_s
-{
-    char *key;
-    size_t key_len;
-    char *value;
-    size_t value_len;
-    mhash_entry_t *next;
-};
-
-typedef struct mhash_table_s
-{
-    size_t bucket_count;
-    mhash_entry_t **buckets;
-    unsigned char key[16];
-
-    EVP_MAC_CTX *ctx;
-} mhash_table_t;
-
-static size_t mhash_init_key(mhash_table_t *ht, char *key)
+static size_t mhash_init_key(struct mhash_table_s *ht, char *key)
 {
     if (!key)
         return 0;
@@ -30,7 +12,7 @@ static size_t mhash_init_key(mhash_table_t *ht, char *key)
     return sizeof(ht->key);
 }
 
-static size_t mhash_init_siphash_ctx(mhash_table_t *ht)
+static size_t mhash_init_siphash_ctx(struct mhash_table_s *ht)
 {
     EVP_MAC *sip = EVP_MAC_fetch(NULL, "SIPHASH", NULL);
     if (!sip)
@@ -46,21 +28,9 @@ static size_t mhash_init_siphash_ctx(mhash_table_t *ht)
     return 0;
 }
 
-static inline unsigned char mhash_calculate_hash(mhash_table_t *ht, const char *value, const size_t value_len)
+struct mhash_table_s *mhash_create_table(char *key, size_t table_size)
 {
-    unsigned char out = 0;
-    size_t outlen = 0;
-
-    EVP_MAC_init(ht->ctx, ht->key, sizeof(ht->key), NULL);
-    EVP_MAC_update(ht->ctx, value, value_len);
-    EVP_MAC_final(ht->ctx, &out, &outlen, sizeof(out));
-
-    return out;
-}
-
-mhash_table_t *mhash_create_table(char *key, size_t table_size)
-{
-    mhash_table_t *ht = calloc(1, sizeof(*ht));
+    struct mhash_table_s *ht = calloc(1, sizeof(*ht));
     if (!ht)
         return NULL;
 
@@ -90,16 +60,16 @@ mhash_table_t *mhash_create_table(char *key, size_t table_size)
     return ht;
 }
 
-void mhash_destroy_table(mhash_table_t *ht)
+void mhash_destroy_table(struct mhash_table_s *ht)
 {
     if (ht->buckets)
     {
         for (size_t i = 0; i < ht->bucket_count; ++i)
         {
-            mhash_entry_t *e = ht->buckets[i];
+            struct mhash_entry_s *e = ht->buckets[i];
             while (e)
             {
-                mhash_entry_t *next = e->next;
+                struct mhash_entry_s *next = e->next;
                 free(e->key);
                 free(e->value);
                 free(e);
@@ -115,12 +85,12 @@ void mhash_destroy_table(mhash_table_t *ht)
     return;
 }
 
-mhash_entry_t *mhash_get(mhash_table_t *hash_table, char *key, size_t key_len)
+struct mhash_entry_s *mhash_get(struct mhash_table_s *hash_table, char *key, size_t key_len)
 {
     uint64_t hash = mhash_calculate_hash(hash_table, key, key_len);
     size_t idx = hash % hash_table->bucket_count;
 
-    mhash_entry_t *e = hash_table->buckets[idx];
+    struct mhash_entry_s *e = hash_table->buckets[idx];
     while (e)
     {
         if (e->key_len == key_len && memcmp(e->key, key, key_len) == 0)
@@ -136,9 +106,9 @@ mhash_entry_t *mhash_get(mhash_table_t *hash_table, char *key, size_t key_len)
     return NULL;
 }
 
-int mhash_delete(mhash_table_t *hash_table, char *key, size_t key_len)
+int mhash_delete(struct mhash_table_s *hash_table, char *key, size_t key_len)
 {
-    mhash_entry_t *e = mhash_get(hash_table, key, key_len);
+    struct mhash_entry_s *e = mhash_get(hash_table, key, key_len);
 
     if (e)
     {
@@ -151,13 +121,13 @@ int mhash_delete(mhash_table_t *hash_table, char *key, size_t key_len)
     return 1;
 }
 
-int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, const void *value,
+int mhash_put(struct mhash_table_s *hash_table, const void *key, const size_t key_len, const void *value,
               const size_t value_len)
 {
     uint64_t hash = mhash_calculate_hash(hash_table, key, key_len);
     size_t idx = hash % hash_table->bucket_count;
 
-    mhash_entry_t *e = hash_table->buckets[idx];
+    struct mhash_entry_s *e = hash_table->buckets[idx];
     while (e)
     {
         if (e->key_len == key_len && memcmp(e->key, key, key_len) == 0)
@@ -177,7 +147,7 @@ int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, 
     }
 
     /* new entry */
-    mhash_entry_t *ne = malloc(sizeof(*ne));
+    struct mhash_entry_s *ne = malloc(sizeof(*ne));
     if (!ne)
         return 1;
 

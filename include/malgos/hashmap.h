@@ -8,28 +8,26 @@
 extern "C" {
 #endif
 
-typedef struct mhash_entry_s mhash_entry_t;
-
 struct mhash_entry_s {
     char *key;
     size_t key_len;
     char *value;
     size_t value_len;
-    mhash_entry_t *next;
+    struct mhash_entry_s *next;
 };
 
-typedef struct mhash_table_s {
+struct mhash_table_s {
     size_t bucket_count;
-    mhash_entry_t **buckets;
+    struct mhash_entry_s **buckets;
     unsigned char key[16];
     EVP_MAC_CTX *ctx;
-} mhash_table_t;
+};
 
-mhash_table_t mhash_create_table(char *key, size_t table_size);
-void mhash_destroy_table(mhash_table_t ht);
-mhash_entry_t *mhash_get(mhash_table_t *hash_table, char *key, size_t key_len);
-int mhash_delete(mhash_table_t *hash_table, char *key, size_t key_len);
-int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, const void *value, const size_t value_len);
+struct mhash_table_s *mhash_create_table(char *key, size_t table_size);
+void mhash_destroy_table(struct mhash_table_s *ht);
+struct mhash_entry_s *mhash_get(struct mhash_table_s *hash_table, char *key, size_t key_len);
+int mhash_delete(struct mhash_table_s *hash_table, char *key, size_t key_len);
+int mhash_put(struct mhash_table_s *hash_table, const void *key, const size_t key_len, const void *value, const size_t value_len);
 
 #ifdef __cplusplus
 }
