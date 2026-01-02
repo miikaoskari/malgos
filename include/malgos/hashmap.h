@@ -4,6 +4,10 @@
 #include <stddef.h>
 #include <openssl/evp.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct mhash_entry_s mhash_entry_t;
 
 struct mhash_entry_s {
@@ -26,5 +30,9 @@ void mhash_destroy_table(mhash_table_t ht);
 mhash_entry_t *mhash_get(mhash_table_t *hash_table, char *key, size_t key_len);
 int mhash_delete(mhash_table_t *hash_table, char *key, size_t key_len);
 int mhash_put(mhash_table_t *hash_table, const void *key, const size_t key_len, const void *value, const size_t value_len);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // MHASHMAP_H
