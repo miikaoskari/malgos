@@ -76,3 +76,5 @@ CMakeUserPresets.json
 
 build/
 .cache/
+.DS_Store
+._.DS_Store
