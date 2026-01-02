@@ -1,4 +1,4 @@
-#include "ds/piece.hpp"
+#include "malgos/piecetable.hpp"
 #include <cstddef>
 #include <string>
 
