@@ -1,8 +1,8 @@
+#include "malgos/hashmap.h"
+#include "malgos/hash.h"
 #include <openssl/evp.h>
 #include <stdlib.h>
 #include <string.h>
-#include "malgos/hashmap.h"
-#include "malgos/hash.h"
 
 static size_t mhash_init_key(struct mhash_table_s *ht, char *key)
 {
