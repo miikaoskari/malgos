@@ -11,4 +11,3 @@ unsigned char mhash_calculate_hash(struct mhash_table_s *ht, const char *value, 
 
     return out;
 }
-
