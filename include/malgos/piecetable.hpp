@@ -10,11 +10,8 @@ enum PieceType
     Added
 };
 
-class Piece
+struct Piece
 {
-  public:
-    Piece(PieceType type, size_t start, size_t length);
-    ~Piece();
     PieceType m_type;
     size_t m_start;
     size_t m_length;
