@@ -1,25 +1,30 @@
 #ifndef MLG_INTRUSIVE_HASHTABLE_H
 #define MLG_INTRUSIVE_HASHTABLE_H
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "malgos/common/types.h"
 
-struct mlg_hash_node_s {
-    struct mlg_hash_node_s *next;
-    struct mlg_hash_node_s *prev;
+typedef struct mlg_hash_node_s mlg_hash_node_t;
+typedef struct mlg_hash_table_s mlg_hash_table_t;
+
+struct mlg_hash_node_s
+{
+    mlg_hash_node_t *next;
+    mlg_hash_node_t *prev;
     uint32_t hash;
 };
 
-struct mlg_hash_table_s {
-    struct mlg_hash_node_s **buckets;
+struct mlg_hash_table_s
+{
+    mlg_hash_node_t **buckets;
     size_t size;
 };
 
-mlg_error_t mlg_hashtable_init(struct mlg_hash_table_s *hash_table, struct mlg_hash_node_s **buckets, size_t size);
-mlg_error_t mlg_hashtable_insert(struct mlg_hash_table_s *hash_table, struct mlg_hash_node_s *node);
-mlg_error_t mlg_hashtable_remove(struct mlg_hash_table_s *hash_table, struct mlg_hash_node_s *node);
-struct mlg_hash_node_s* mlg_hashtable_get(struct mlg_hash_table_s *hash_table, uint32_t hash);
+mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_node_t **buckets, size_t size);
+mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *node);
+mlg_error_t mlg_hashtable_remove(mlg_hash_table_t *hash_table, mlg_hash_node_t *node);
+mlg_hash_node_t *mlg_hashtable_get(mlg_hash_table_t *hash_table, uint32_t hash);
 
 #endif // MLG_INTRUSIVE_HASHTABLE_H

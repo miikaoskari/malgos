@@ -4,25 +4,26 @@
 #include "malgos/common/types.h"
 #include "malgos/intrusive/hashtable.h"
 
-mlg_error_t mlg_hashtable_init(struct mlg_hash_table_s *hash_table, struct mlg_hash_node_s **buckets, size_t size)
+mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_node_t **buckets, size_t size)
 {
     if (!hash_table || size == 0 || !buckets)
         return MLG_ERROR;
 
     hash_table->size = size;
     hash_table->buckets = buckets;
-    memset(hash_table->buckets, 0, size * sizeof(struct mlg_hash_node_s *));
+    memset(hash_table->buckets, 0, size * sizeof(mlg_hash_node_t *));
+    return MLG_OK;
 }
 
-mlg_error_t mlg_hashtable_insert(struct mlg_hash_table_s *hash_table, struct mlg_hash_node_s *node)
+mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *node)
 {
     if (!hash_table || !hash_table->buckets || !node || hash_table->size == 0)
     {
         return MLG_ERROR;
     }
 
-    uint32_t idx = node->hash % hash_table->size;
-    struct mlg_hash_node_s *next = hash_table->buckets[idx];
+    size_t idx = node->hash % hash_table->size;
+    mlg_hash_node_t *next = hash_table->buckets[idx];
 
     node->next = next;
     node->prev = NULL;
@@ -36,7 +37,7 @@ mlg_error_t mlg_hashtable_insert(struct mlg_hash_table_s *hash_table, struct mlg
     return MLG_OK;
 }
 
-mlg_error_t mlg_hashtable_remove(struct mlg_hash_table_s *hash_table, struct mlg_hash_node_s *node)
+mlg_error_t mlg_hashtable_remove(mlg_hash_table_t *hash_table, mlg_hash_node_t *node)
 {
     if (!hash_table || !hash_table->buckets || !node || hash_table->size == 0)
     {
@@ -49,7 +50,11 @@ mlg_error_t mlg_hashtable_remove(struct mlg_hash_table_s *hash_table, struct mlg
     }
     else
     {
-        uint32_t idx = node->hash % hash_table->size;
+        size_t idx = node->hash % hash_table->size;
+        if (hash_table->buckets[idx] != node)
+        {
+            return MLG_ERROR;
+        }
         hash_table->buckets[idx] = node->next;
     }
 
@@ -64,7 +69,7 @@ mlg_error_t mlg_hashtable_remove(struct mlg_hash_table_s *hash_table, struct mlg
     return MLG_OK;
 }
 
-struct mlg_hash_node_s *mlg_hashtable_get(struct mlg_hash_table_s *hash_table, uint32_t hash)
+mlg_hash_node_t *mlg_hashtable_get(mlg_hash_table_t *hash_table, uint32_t hash)
 {
     if (!hash_table || !hash_table->buckets || hash_table->size == 0)
     {
@@ -72,7 +77,7 @@ struct mlg_hash_node_s *mlg_hashtable_get(struct mlg_hash_table_s *hash_table, u
     }
 
     size_t idx = hash % hash_table->size;
-    struct mlg_hash_node_s *current = hash_table->buckets[idx];
+    mlg_hash_node_t *current = hash_table->buckets[idx];
 
     while (current)
     {
