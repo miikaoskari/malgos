@@ -4,10 +4,13 @@
 #include "malgos/common/types.h"
 #include "malgos/intrusive/hashtable.h"
 
+
 mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_node_t **buckets, size_t size)
 {
     if (!hash_table || size == 0 || !buckets)
+    {
         return MLG_ERROR;
+    }
 
     hash_table->size = size;
     hash_table->buckets = buckets;
