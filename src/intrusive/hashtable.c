@@ -68,26 +68,3 @@ mlg_error_t mlg_hashtable_remove(mlg_hash_table_t *hash_table, mlg_hash_node_t *
 
     return MLG_OK;
 }
-
-mlg_hash_node_t *mlg_hashtable_get(mlg_hash_table_t *hash_table, uint32_t hash)
-{
-    if (!hash_table || !hash_table->buckets || hash_table->size == 0)
-    {
-        return NULL;
-    }
-
-    size_t idx = hash % hash_table->size;
-    mlg_hash_node_t *current = hash_table->buckets[idx];
-
-    while (current)
-    {
-        // TODO: needs a callback comparison function to handle collisions
-        if (current->hash == hash)
-        {
-            return current;
-        }
-        current = current->next;
-    }
-
-    return NULL;
-}
