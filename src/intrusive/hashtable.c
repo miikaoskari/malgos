@@ -5,7 +5,7 @@
 #include "malgos/intrusive/hashtable.h"
 
 
-mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_node_t **buckets, size_t size)
+mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_head_t *buckets, size_t size)
 {
     if (!hash_table || size == 0 || !buckets)
     {
@@ -14,7 +14,7 @@ mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_node_t **b
 
     hash_table->size = size;
     hash_table->buckets = buckets;
-    memset(hash_table->buckets, 0, size * sizeof(mlg_hash_node_t *));
+    memset(hash_table->buckets, 0, size * sizeof(mlg_hash_head_t *));
     return MLG_OK;
 }
 
@@ -26,48 +26,38 @@ mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *
     }
 
     size_t idx = node->hash % hash_table->size;
-    mlg_hash_node_t *next = hash_table->buckets[idx];
+    mlg_hash_head_t *head = &hash_table->buckets[idx];
 
-    node->next = next;
-    node->prev = NULL;
+    mlg_hash_node_t *first = head->first;
 
-    if (next)
+    node->next = first;
+    if (first)
     {
-        next->prev = node;
+        first->pprev = &node->next;
     }
-    hash_table->buckets[idx] = node;
+
+    head->first = node;
+    node->pprev = &head->first;
 
     return MLG_OK;
 }
 
-mlg_error_t mlg_hashtable_remove(mlg_hash_table_t *hash_table, mlg_hash_node_t *node)
+mlg_error_t mlg_hashtable_remove(mlg_hash_node_t *node)
 {
-    if (!hash_table || !hash_table->buckets || !node || hash_table->size == 0)
+    if (!node || !node->pprev)
     {
         return MLG_ERROR;
     }
 
-    if (node->prev)
-    {
-        node->prev->next = node->next;
-    }
-    else
-    {
-        size_t idx = node->hash % hash_table->size;
-        if (hash_table->buckets[idx] != node)
-        {
-            return MLG_ERROR;
-        }
-        hash_table->buckets[idx] = node->next;
-    }
+    *(node->pprev) = node->next;
 
     if (node->next)
     {
-        node->next->prev = node->prev;
+        node->next->pprev = node->pprev;
     }
 
     node->next = NULL;
-    node->prev = NULL;
+    node->pprev = NULL;
 
     return MLG_OK;
 }
