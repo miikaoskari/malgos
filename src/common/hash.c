@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
+#include "malgos/common/hash.h"
 
 uint32_t mlg_fnv1a_hash(const char* key, size_t length) {
     uint32_t hash = 2166136261u;
