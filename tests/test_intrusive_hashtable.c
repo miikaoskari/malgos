@@ -72,6 +72,37 @@ void test_hashtable_for_each_possible(void)
     TEST_ASSERT_EQUAL_UINT(2, count);
 }
 
+void test_hashtable_deletion(void)
+{
+    userdata_t data;
+    mlg_hash_head_t buckets[8];
+    mlg_hash_table_t table;
+
+    mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 8);
+    TEST_ASSERT_EQUAL(MLG_OK, init_error);
+
+
+    uint32_t hash = mlg_fnv1a_hash("testkey", strlen("testkey"));
+
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_insert(&table, &data.node, hash));
+
+    mlg_hash_node_t *node;
+    mlg_hash_for_each_possible(node, &table, hash)
+    {
+        TEST_ASSERT_EQUAL(&data.node, node);
+    }
+
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_remove(&data.node));
+
+    int count;
+    mlg_hash_for_each_possible(node, &table, hash)
+    {
+        count++;
+    }
+
+    TEST_ASSERT_EQUAL_INT(0, count);
+}
+
 int main(void)
 {
     UnityBegin("test_intrusive_hashtable.c");
