@@ -1,13 +1,12 @@
-#include "malgos/hashmap.h"
+#include <stddef.h>
+#include <stdint.h>
+#include "malgos/common/hash.h"
 
-unsigned char mhash_calculate_hash(struct mhash_table_s *ht, const char *value, const size_t value_len)
-{
-    unsigned char out = 0;
-    size_t outlen = 0;
-
-    EVP_MAC_init(ht->ctx, ht->key, sizeof(ht->key), NULL);
-    EVP_MAC_update(ht->ctx, value, value_len);
-    EVP_MAC_final(ht->ctx, &out, &outlen, sizeof(out));
-
-    return out;
+uint32_t mlg_fnv1a_hash(const char* key, size_t length) {
+    uint32_t hash = 2166136261u;
+    for (size_t i = 0; i < length; ++i) {
+        hash ^= (uint8_t)key[i];
+        hash *= 16777619u;
+    }
+    return hash;
 }

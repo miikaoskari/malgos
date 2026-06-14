@@ -1,18 +1,28 @@
+include(FetchContent)
+
+FetchContent_Declare(
+    unity
+    GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
+    GIT_TAG v2.6.1
+)
+FetchContent_MakeAvailable(unity)
+
+add_library(Unity STATIC ${unity_SOURCE_DIR}/src/unity.c)
+
 add_executable(tests
-    test_hashmap.cpp
-    test_piecetable.cpp
+    test_intrusive_hashtable.c
 )
 
-target_include_directories(tests PRIVATE ${OPENSSL_INCLUDE_DIR})
+target_include_directories(tests PRIVATE
+    ${unity_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/include
+)
 
 target_link_libraries(tests
     PRIVATE
         malgos
-        GTest::gtest_main
-        OpenSSL::SSL
-        OpenSSL::Crypto
+        Unity
 )
 
-include(GoogleTest)
 include(CTest)
-gtest_discover_tests(tests)
+add_test(NAME tests COMMAND tests)
