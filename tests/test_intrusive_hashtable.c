@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <string.h>
 
 #include "malgos/common/hash.h"
@@ -5,6 +6,7 @@
 #include "malgos/common/utils.h"
 #include "malgos/intrusive/hashtable.h"
 #include "unity.h"
+#include "unity_internals.h"
 
 void setUp(void)
 {
