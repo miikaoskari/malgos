@@ -4,7 +4,6 @@
 #include "malgos/common/types.h"
 #include "malgos/intrusive/hashtable.h"
 
-
 mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_head_t *buckets, size_t size)
 {
     if (!hash_table || size == 0 || !buckets)
@@ -18,14 +17,14 @@ mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_head_t *bu
     return MLG_OK;
 }
 
-mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *node)
+mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *node, int key)
 {
     if (!hash_table || !hash_table->buckets || !node || hash_table->size == 0)
     {
         return MLG_ERROR;
     }
 
-    size_t idx = node->hash % hash_table->size;
+    size_t idx = key % hash_table->size;
     mlg_hash_head_t *head = &hash_table->buckets[idx];
 
     mlg_hash_node_t *first = head->first;
