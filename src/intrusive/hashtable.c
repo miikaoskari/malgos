@@ -12,11 +12,11 @@ mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_head_t *bu
 
     hash_table->size = size;
     hash_table->buckets = buckets;
-    memset(hash_table->buckets, 0, size * sizeof(mlg_hash_head_t *));
+    memset(hash_table->buckets, 0, size * sizeof(*hash_table->buckets));
     return MLG_OK;
 }
 
-mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *node, int key)
+mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *node, size_t key)
 {
     if (!hash_table || !hash_table->buckets || !node || hash_table->size == 0)
     {
