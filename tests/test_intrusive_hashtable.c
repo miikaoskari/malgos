@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "malgos/common/hash.h"
 #include "malgos/common/types.h"
 #include "malgos/common/utils.h"
 #include "malgos/intrusive/hashtable.h"
