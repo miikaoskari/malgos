@@ -34,12 +34,11 @@ void test_hashtable_insert(void)
     mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 128);
     TEST_ASSERT_EQUAL(MLG_OK, init_error);
 
-    int hash = mlg_fnv1a_hash("testkey", strlen("testkey"));
-    mlg_error_t error = mlg_hashtable_insert(&table, &data.node, hash);
+    mlg_error_t error = mlg_hashtable_insert(&table, &data.node, 1);
     TEST_ASSERT_EQUAL(MLG_OK, error);
 
     mlg_hash_node_t *nodep;
-    mlg_hash_for_each_possible(nodep, &table, hash)
+    mlg_hash_for_each_possible(nodep, &table, 1)
     {
         TEST_ASSERT_NOT_NULL(nodep);
         userdata_t *recvdata = mlg_container_of(nodep, userdata_t, node);
@@ -57,14 +56,12 @@ void test_hashtable_for_each_possible(void)
     mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 8);
     TEST_ASSERT_EQUAL(MLG_OK, init_error);
 
-    uint32_t hash = mlg_fnv1a_hash("shared-key", strlen("shared-key"));
-
-    TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_insert(&table, &first.node, hash));
-    TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_insert(&table, &second.node, hash));
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_insert(&table, &first.node, 1));
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_insert(&table, &second.node, 1));
 
     unsigned int count = 0;
     mlg_hash_node_t *node;
-    mlg_hash_for_each_possible(node, &table, hash)
+    mlg_hash_for_each_possible(node, &table, 1)
     {
         count++;
     }
@@ -81,13 +78,10 @@ void test_hashtable_deletion(void)
     mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 8);
     TEST_ASSERT_EQUAL(MLG_OK, init_error);
 
-
-    uint32_t hash = mlg_fnv1a_hash("testkey", strlen("testkey"));
-
-    TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_insert(&table, &data.node, hash));
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_insert(&table, &data.node, 1));
 
     mlg_hash_node_t *node;
-    mlg_hash_for_each_possible(node, &table, hash)
+    mlg_hash_for_each_possible(node, &table, 1)
     {
         TEST_ASSERT_EQUAL(&data.node, node);
     }
@@ -95,7 +89,7 @@ void test_hashtable_deletion(void)
     TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_remove(&data.node));
 
     int count;
-    mlg_hash_for_each_possible(node, &table, hash)
+    mlg_hash_for_each_possible(node, &table, 1)
     {
         count++;
     }
