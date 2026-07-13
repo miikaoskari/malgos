@@ -42,5 +42,6 @@ struct mlg_hash_table_s
 mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_head_t *buckets, size_t size);
 mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *node, size_t key);
 mlg_error_t mlg_hashtable_remove(mlg_hash_node_t *node);
+mlg_error_t mlg_hashtable_rehash(mlg_hash_table_t *old_table, mlg_hash_table_t *new_table, mlg_hash_key_cb key_cb);
 
 #endif // MLG_INTRUSIVE_HASHTABLE_H
