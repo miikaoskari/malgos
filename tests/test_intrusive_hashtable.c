@@ -25,13 +25,13 @@ typedef struct userdata_s
 void test_hashtable_insert(void)
 {
     userdata_t data;
-    mlg_hash_head_t buckets[128];
+    mlg_hash_head_t buckets[8];
 
     data.i = 42;
     data.str = "answer";
 
     mlg_hash_table_t table;
-    mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 128);
+    mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 8);
     TEST_ASSERT_EQUAL(MLG_OK, init_error);
 
     mlg_error_t error = mlg_hashtable_insert(&table, &data.node, 1);
@@ -140,7 +140,6 @@ void test_hashtable_deletion(void)
     userdata_t data;
     mlg_hash_head_t buckets[8];
     mlg_hash_table_t table;
-
     mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 8);
     TEST_ASSERT_EQUAL(MLG_OK, init_error);
 
