@@ -2,6 +2,8 @@
 
 algorithm and data structure library with c and c++
 
+api is still unstable and subject to change.
+
 ## building
 
 to build the project:
