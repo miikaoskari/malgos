@@ -47,6 +47,25 @@ void test_hashtable_insert(void)
     }
 }
 
+void test_hashtable_insert_invalid_table(void)
+{
+    userdata_t data;
+    mlg_hash_head_t buckets[8];
+    mlg_hash_table_t table;
+    mlg_error_t error = mlg_hashtable_insert(NULL, &data.node, 1);
+    TEST_ASSERT_EQUAL(MLG_ERROR, error);
+}
+
+void test_hashtable_insert_invalid_node(void)
+{
+    userdata_t data;
+    mlg_hash_head_t buckets[8];
+    mlg_hash_table_t table;
+    mlg_hashtable_init(&table, buckets, 8);
+    mlg_error_t error = mlg_hashtable_insert(&table, NULL, 1);
+    TEST_ASSERT_EQUAL(MLG_ERROR, error);
+}
+
 void test_hashtable_for_each_possible(void)
 {
     userdata_t first;
@@ -147,7 +166,16 @@ void test_hashtable_deletion(void)
 int main(void)
 {
     UnityBegin("test_intrusive_hashtable.c");
+    /* insertion tests */
     RUN_TEST(test_hashtable_insert);
+    RUN_TEST(test_hashtable_insert_invalid_table);
+    RUN_TEST(test_hashtable_insert_invalid_node);
+    /* iteration tests */
     RUN_TEST(test_hashtable_for_each_possible);
+    RUN_TEST(test_hashtable_for_each);
+    RUN_TEST(test_hashtable_for_each_safe);
+    /* deletion operation tests */
+    RUN_TEST(test_hashtable_deletion);
+
     return UnityEnd();
 }
