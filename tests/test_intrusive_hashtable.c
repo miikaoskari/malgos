@@ -69,6 +69,53 @@ void test_hashtable_for_each_possible(void)
     TEST_ASSERT_EQUAL_UINT(2, count);
 }
 
+void test_hashtable_for_each(void)
+{
+    userdata_t data[4];
+    mlg_hash_head_t buckets[8];
+    mlg_hash_table_t table;
+    mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 8);
+    TEST_ASSERT_EQUAL_INT(MLG_OK, init_error);
+
+    mlg_hashtable_insert(&table, &data[0].node, 0);
+    mlg_hashtable_insert(&table, &data[1].node, 1);
+    mlg_hashtable_insert(&table, &data[2].node, 2);
+    mlg_hashtable_insert(&table, &data[3].node, 0);
+
+    unsigned int count = 0;
+    mlg_hash_node_t *pos;
+    size_t bkt;
+    mlg_hash_for_each(pos, &table, bkt)
+    {
+        count++;
+    }
+    TEST_ASSERT_EQUAL_INT(4, count);
+}
+
+void test_hashtable_for_each_safe(void)
+{
+    userdata_t data[4];
+    mlg_hash_head_t buckets[8];
+    mlg_hash_table_t table;
+    mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 8);
+    TEST_ASSERT_EQUAL_INT(MLG_OK, init_error);
+
+    mlg_hashtable_insert(&table, &data[0].node, 0);
+    mlg_hashtable_insert(&table, &data[1].node, 1);
+    mlg_hashtable_insert(&table, &data[2].node, 2);
+    mlg_hashtable_insert(&table, &data[3].node, 0);
+
+    unsigned int count = 0;
+    mlg_hash_node_t *pos;
+    size_t bkt;
+    mlg_hash_node_t *n;
+    mlg_hash_for_each_safe(pos, &table, bkt, n)
+    {
+        count++;
+    }
+    TEST_ASSERT_EQUAL_INT(4, count);
+}
+
 void test_hashtable_deletion(void)
 {
     userdata_t data;
