@@ -161,6 +161,45 @@ void test_hashtable_deletion(void)
     TEST_ASSERT_EQUAL_INT(0, count);
 }
 
+void test_hashtable_for_each_safe_and_delete(void)
+{
+    userdata_t data[4];
+    mlg_hash_head_t buckets[8];
+    mlg_hash_table_t table;
+    mlg_error_t init_error = mlg_hashtable_init(&table, buckets, 8);
+    TEST_ASSERT_EQUAL_INT(MLG_OK, init_error);
+
+    mlg_hashtable_insert(&table, &data[0].node, 0);
+    mlg_hashtable_insert(&table, &data[1].node, 1);
+    mlg_hashtable_insert(&table, &data[2].node, 2);
+    mlg_hashtable_insert(&table, &data[3].node, 0);
+
+    unsigned int count = 0;
+    mlg_hash_node_t *pos;
+    size_t bkt;
+    mlg_hash_node_t *n;
+    mlg_hash_for_each_safe(pos, &table, bkt, n)
+    {
+        count++;
+    }
+    TEST_ASSERT_EQUAL_INT(4, count);
+
+    count = 0;
+    mlg_hash_for_each_safe(pos, &table, bkt, n)
+    {
+        mlg_hashtable_remove(pos);
+        count++;
+    }
+    TEST_ASSERT_EQUAL_INT(4, count);
+
+    count = 0;
+    mlg_hash_for_each_safe(pos, &table, bkt, n)
+    {
+        count++;
+    }
+    TEST_ASSERT_EQUAL_INT(0, count);
+}
+
 int main(void)
 {
     UnityBegin("test_intrusive_hashtable.c");
@@ -172,8 +211,9 @@ int main(void)
     RUN_TEST(test_hashtable_for_each_possible);
     RUN_TEST(test_hashtable_for_each);
     RUN_TEST(test_hashtable_for_each_safe);
-    /* deletion operation tests */
+    /* deletion tests */
     RUN_TEST(test_hashtable_deletion);
+    RUN_TEST(test_hashtable_for_each_safe_and_delete);
 
     return UnityEnd();
 }
