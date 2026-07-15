@@ -152,7 +152,7 @@ void test_hashtable_deletion(void)
 
     TEST_ASSERT_EQUAL(MLG_OK, mlg_hashtable_remove(&data.node));
 
-    int count;
+    int count = 0;
     mlg_hash_for_each_possible(node, &table, 1)
     {
         count++;
