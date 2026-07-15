@@ -217,6 +217,55 @@ void test_hashtable_deletion_invalid_node(void)
     TEST_ASSERT_EQUAL(MLG_ERROR, error);
 }
 
+size_t rehash_key_callback(mlg_hash_node_t *nodep)
+{
+    userdata_t *data = mlg_container_of(nodep, userdata_t, node);
+    return data->i;
+}
+
+void test_hashtable_rehash_to_other_table(void)
+{
+    userdata_t data[4];
+    mlg_hash_head_t buckets1[8];
+    mlg_hash_table_t table1;
+    mlg_error_t init_error = mlg_hashtable_init(&table1, buckets1, 8);
+    TEST_ASSERT_EQUAL_INT(MLG_OK, init_error);
+
+    data[0].i = 0;
+    data[1].i = 1;
+    data[2].i = 2;
+    data[3].i = 0;
+
+    mlg_hashtable_insert(&table1, &data[0].node, data[0].i);
+    mlg_hashtable_insert(&table1, &data[1].node, data[1].i);
+    mlg_hashtable_insert(&table1, &data[2].node, data[2].i);
+    mlg_hashtable_insert(&table1, &data[3].node, data[3].i);
+
+    mlg_hash_head_t buckets2[8];
+    mlg_hash_table_t table2;
+    init_error = mlg_hashtable_init(&table2, buckets2, 8);
+    TEST_ASSERT_EQUAL_INT(MLG_OK, init_error);
+
+    init_error = mlg_hashtable_rehash(&table1, &table2, rehash_key_callback);
+    TEST_ASSERT_EQUAL_INT(MLG_OK, init_error);
+
+    mlg_hash_node_t *pos;
+    size_t bkt;
+    int count = 0;
+    mlg_hash_for_each(pos, &table2, bkt)
+    {
+        count++;
+    }
+    TEST_ASSERT_EQUAL_INT(4, count);
+
+    count = 0;
+    mlg_hash_for_each(pos, &table1, bkt)
+    {
+        count++;
+    }
+    TEST_ASSERT_EQUAL_INT(0, count);
+}
+
 int main(void)
 {
     UnityBegin("test_intrusive_hashtable.c");
@@ -232,6 +281,8 @@ int main(void)
     RUN_TEST(test_hashtable_deletion);
     RUN_TEST(test_hashtable_for_each_safe_and_delete);
     RUN_TEST(test_hashtable_deletion_invalid_node);
+    /* rehashing tests */
+    RUN_TEST(test_hashtable_rehash_to_other_table);
 
     return UnityEnd();
 }
