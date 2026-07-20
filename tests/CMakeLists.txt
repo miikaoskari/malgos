@@ -9,20 +9,26 @@ FetchContent_MakeAvailable(unity)
 
 add_library(Unity STATIC ${unity_SOURCE_DIR}/src/unity.c)
 
-add_executable(tests
+set(tests
     test_intrusive_hashtable.c
+    test_intrusive_dlist.c
 )
 
-target_include_directories(tests PRIVATE
-    ${unity_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/include
-)
+foreach(source IN LISTS tests)
+    get_filename_component(name ${source} NAME_WE)
 
-target_link_libraries(tests
-    PRIVATE
-        malgos
-        Unity
-)
+    add_executable(${name} ${source})
 
-include(CTest)
-add_test(NAME tests COMMAND tests)
+    target_include_directories(${name} PRIVATE
+        ${unity_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/include
+    )
+
+    target_link_libraries(${name}
+        PRIVATE
+            malgos
+            Unity
+    )
+
+    add_test(NAME ${name} COMMAND ${name})
+endforeach()
