@@ -3,7 +3,10 @@
 
 #include "malgos/common/types.h"
 
-// TODO: for each macros here
+#define mlg_dlist_for_each(pos, dlist) for ((pos) = (dlist)->head.next; (pos) != &(list)->head; (pos) = (pos)->next)
+
+#define mlg_dlist_for_each_safe(pos, n, list)                                                                          \
+    for ((pos) = (list)->head.next, (n) = (pos)->next; (pos) != &(list)->head; (pos) = (n), (n) = (pos)->next)
 
 typedef struct mlg_dlist_node_s mlg_dlist_node_t;
 typedef struct mlg_dlist_s mlg_dlist_t;
