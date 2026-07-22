@@ -31,7 +31,7 @@ mlg_error_t mlg_dlist_push_back(mlg_dlist_t *dlist, mlg_dlist_node_t *node)
         return MLG_ERROR;
     }
 
-    __mlg_dlist_insert(node, &dlist->head, &dlist->head);
+    __mlg_dlist_insert(node, dlist->head.prev, &dlist->head);
 
     return MLG_OK;
 }
@@ -43,7 +43,7 @@ mlg_error_t mlg_dlist_push_front(mlg_dlist_t *dlist, mlg_dlist_node_t *node)
         return MLG_ERROR;
     }
 
-    __mlg_dlist_insert(node, dlist->head.prev, &dlist->head);
+    __mlg_dlist_insert(node, &dlist->head, dlist->head.next);
 
     return MLG_OK;
 }
