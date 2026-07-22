@@ -7,8 +7,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(unity)
 
-add_library(Unity STATIC ${unity_SOURCE_DIR}/src/unity.c)
-
 set(tests
     test_intrusive_hashtable.c
     test_intrusive_dlist.c
@@ -19,16 +17,16 @@ foreach(source IN LISTS tests)
 
     add_executable(${name} ${source})
 
-    target_include_directories(${name} PRIVATE
-        ${unity_SOURCE_DIR}/src
-        ${CMAKE_SOURCE_DIR}/include
-    )
-
     target_link_libraries(${name}
         PRIVATE
             malgos
-            Unity
+            unity
     )
+
+    if(ENABLE_SANITIZERS)
+        target_compile_options(${name} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+        target_link_options(${name} PRIVATE -fsanitize=address,undefined)
+    endif()
 
     add_test(NAME ${name} COMMAND ${name})
 endforeach()
