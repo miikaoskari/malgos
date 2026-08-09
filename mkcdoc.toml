@@ -1,0 +1,35 @@
+[site]
+name = "malgos"
+output_dir = "site"
+repo_url = "https://github.com/miikaoskari/malgos"
+
+[source]
+dirs = ["src", "include"]
+
+[content]
+dir = "docs"
+
+[[nav]]
+type = "page"
+title = "Home"
+path = "index.md"
+
+[[nav]]
+type = "section"
+title = "Guide"
+items = [
+  { type = "page", title = "Installation", path = "install.md" },
+  { type = "page", title = "Testing", path = "testing.md" },
+]
+
+[[nav]]
+type = "section"
+title = "Containers"
+items = [
+    { type = "page", title = "Intrusive Hashtable", path = "containers/intrusive/hashtable.md"},
+    { type = "page", title = "Intrusive Doubly Linked List", path = "containers/intrusive/dlist.md"},
+]
+
+[[nav]]
+type = "api_reference"
+title = "API Reference"
