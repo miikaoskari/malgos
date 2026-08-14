@@ -1,7 +1,7 @@
 #include <stddef.h>
 
-#include "malgos/intrusive/dlist.h"
 #include "malgos/common/types.h"
+#include "malgos/intrusive/dlist.h"
 
 mlg_error_t mlg_dlist_init(mlg_dlist_t *dlist)
 {
@@ -16,6 +16,13 @@ mlg_error_t mlg_dlist_init(mlg_dlist_t *dlist)
     return MLG_OK;
 }
 
+/**
+ * @brief Insertion helper function
+ *
+ * @param *new_node
+ * @param *prev
+ * @param *next
+ */
 static inline void __mlg_dlist_insert(mlg_dlist_node_t *new_node, mlg_dlist_node_t *prev, mlg_dlist_node_t *next)
 {
     next->prev = new_node;
@@ -60,6 +67,30 @@ mlg_error_t mlg_dlist_remove(mlg_dlist_node_t *node)
 
     node->next = NULL;
     node->prev = NULL;
+
+    return MLG_OK;
+}
+
+mlg_error_t mlg_dlist_insert_after(mlg_dlist_node_t *node, mlg_dlist_node_t *after)
+{
+    if (!node || !after || !after->next)
+    {
+       return MLG_ERROR;
+    }
+
+    __mlg_dlist_insert(node, after, after->next);
+
+    return MLG_OK;
+}
+
+mlg_error_t mlg_dlist_insert_before(mlg_dlist_node_t *node, mlg_dlist_node_t *before)
+{
+    if (!node || !before || !before->prev)
+    {
+        return MLG_ERROR;
+    }
+
+    __mlg_dlist_insert(node, before->prev, before);
 
     return MLG_OK;
 }
