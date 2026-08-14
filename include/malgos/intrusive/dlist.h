@@ -26,5 +26,7 @@ mlg_error_t mlg_dlist_init(mlg_dlist_t *dlist);
 mlg_error_t mlg_dlist_push_back(mlg_dlist_t *dlist, mlg_dlist_node_t *node);
 mlg_error_t mlg_dlist_push_front(mlg_dlist_t *dlist, mlg_dlist_node_t *node);
 mlg_error_t mlg_dlist_remove(mlg_dlist_node_t *node);
+mlg_error_t mlg_dlist_insert_after(mlg_dlist_node_t *node, mlg_dlist_node_t *after);
+mlg_error_t mlg_dlist_insert_before(mlg_dlist_node_t *node, mlg_dlist_node_t *before);
 
 #endif // MLG_DLIST_H

@@ -94,6 +94,188 @@ void test_dlist_push_front_multiple(void)
     TEST_ASSERT_EQUAL_PTR(&list.head, node3.prev);
 }
 
+void test_dlist_insert_after(void)
+{
+    mlg_dlist_t list;
+
+    mlg_dlist_init(&list);
+
+    mlg_dlist_node_t node1, node2, node3, after_node_2;
+
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_front(&list, &node1));
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_front(&list, &node2));
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_front(&list, &node3));
+
+    /* insert after node 2 */
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_insert_after(&after_node_2, &node2));
+
+    /* check the order */
+    TEST_ASSERT_EQUAL_PTR(&node3, list.head.next);
+    TEST_ASSERT_EQUAL_PTR(&node2, node3.next);
+    TEST_ASSERT_EQUAL_PTR(&after_node_2, node2.next);
+    TEST_ASSERT_EQUAL_PTR(&node1, after_node_2.next);
+    TEST_ASSERT_EQUAL_PTR(&list.head, node1.next);
+
+    /* reverse chain */
+    TEST_ASSERT_EQUAL_PTR(&node1, list.head.prev);
+    TEST_ASSERT_EQUAL_PTR(&after_node_2, node1.prev);
+    TEST_ASSERT_EQUAL_PTR(&node2, after_node_2.prev);
+    TEST_ASSERT_EQUAL_PTR(&node3, node2.prev);
+    TEST_ASSERT_EQUAL_PTR(&list.head, node3.prev);
+}
+
+void test_dlist_insert_before(void)
+{
+    mlg_dlist_t list;
+
+    mlg_dlist_init(&list);
+
+    mlg_dlist_node_t node1, node2, node3, before_node_2;
+
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_front(&list, &node1));
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_front(&list, &node2));
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_front(&list, &node3));
+
+    /* insert before node 2 */
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_insert_before(&before_node_2, &node2));
+
+    /* check the order */
+    TEST_ASSERT_EQUAL_PTR(&node3, list.head.next);
+    TEST_ASSERT_EQUAL_PTR(&before_node_2, node3.next);
+    TEST_ASSERT_EQUAL_PTR(&node2, before_node_2.next);
+    TEST_ASSERT_EQUAL_PTR(&node1, node2.next);
+    TEST_ASSERT_EQUAL_PTR(&list.head, node1.next);
+
+    /* reverse chain */
+    TEST_ASSERT_EQUAL_PTR(&node1, list.head.prev);
+    TEST_ASSERT_EQUAL_PTR(&node2, node1.prev);
+    TEST_ASSERT_EQUAL_PTR(&before_node_2, node2.prev);
+    TEST_ASSERT_EQUAL_PTR(&node3, before_node_2.prev);
+    TEST_ASSERT_EQUAL_PTR(&list.head, node3.prev);
+}
+
+void test_dlist_insert_after_at_tail(void)
+{
+    mlg_dlist_t list;
+    mlg_dlist_init(&list);
+
+    mlg_dlist_node_t node1, node2, new_node;
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_back(&list, &node1));
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_back(&list, &node2));
+
+    /* node2 is currently the tail; inserting after it must become the new tail */
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_insert_after(&new_node, &node2));
+
+    TEST_ASSERT_EQUAL_PTR(&node1, list.head.next);
+    TEST_ASSERT_EQUAL_PTR(&node2, node1.next);
+    TEST_ASSERT_EQUAL_PTR(&new_node, node2.next);
+    TEST_ASSERT_EQUAL_PTR(&list.head, new_node.next);
+
+    /* reverse chain */
+    TEST_ASSERT_EQUAL_PTR(&new_node, list.head.prev);
+    TEST_ASSERT_EQUAL_PTR(&node2, new_node.prev);
+    TEST_ASSERT_EQUAL_PTR(&node1, node2.prev);
+    TEST_ASSERT_EQUAL_PTR(&list.head, node1.prev);
+}
+
+void test_dlist_insert_before_at_head(void)
+{
+    mlg_dlist_t list;
+    mlg_dlist_init(&list);
+
+    mlg_dlist_node_t node1, node2, new_node;
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_back(&list, &node1));
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_back(&list, &node2));
+
+    /* node1 is currently the head; inserting before it must become the new head */
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_insert_before(&new_node, &node1));
+
+    TEST_ASSERT_EQUAL_PTR(&new_node, list.head.next);
+    TEST_ASSERT_EQUAL_PTR(&node1, new_node.next);
+    TEST_ASSERT_EQUAL_PTR(&node2, node1.next);
+    TEST_ASSERT_EQUAL_PTR(&list.head, node2.next);
+
+    /* reverse chain */
+    TEST_ASSERT_EQUAL_PTR(&node2, list.head.prev);
+    TEST_ASSERT_EQUAL_PTR(&node1, node2.prev);
+    TEST_ASSERT_EQUAL_PTR(&new_node, node1.prev);
+    TEST_ASSERT_EQUAL_PTR(&list.head, new_node.prev);
+}
+
+void test_dlist_insert_after_sentinel_matches_push_front(void)
+{
+    mlg_dlist_t list;
+    mlg_dlist_init(&list);
+
+    mlg_dlist_node_t node1, new_node;
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_back(&list, &node1));
+
+    /* the list head is itself a plain node, so inserting after it is
+     * equivalent to push_front */
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_insert_after(&new_node, &list.head));
+
+    TEST_ASSERT_EQUAL_PTR(&new_node, list.head.next);
+    TEST_ASSERT_EQUAL_PTR(&node1, new_node.next);
+    TEST_ASSERT_EQUAL_PTR(&list.head, node1.next);
+}
+
+void test_dlist_insert_before_sentinel_matches_push_back(void)
+{
+    mlg_dlist_t list;
+    mlg_dlist_init(&list);
+
+    mlg_dlist_node_t node1, new_node;
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_back(&list, &node1));
+
+    /* the list head is itself a plain node, so inserting before it is
+     * equivalent to push_back */
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_insert_before(&new_node, &list.head));
+
+    TEST_ASSERT_EQUAL_PTR(&node1, list.head.next);
+    TEST_ASSERT_EQUAL_PTR(&new_node, node1.next);
+    TEST_ASSERT_EQUAL_PTR(&list.head, new_node.next);
+}
+
+void test_dlist_insert_after_single_element_list(void)
+{
+    mlg_dlist_t list;
+    mlg_dlist_init(&list);
+
+    mlg_dlist_node_t node1, new_node;
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_back(&list, &node1));
+
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_insert_after(&new_node, &node1));
+
+    TEST_ASSERT_EQUAL_PTR(&node1, list.head.next);
+    TEST_ASSERT_EQUAL_PTR(&new_node, node1.next);
+    TEST_ASSERT_EQUAL_PTR(&list.head, new_node.next);
+
+    /* reverse chain */
+    TEST_ASSERT_EQUAL_PTR(&new_node, list.head.prev);
+    TEST_ASSERT_EQUAL_PTR(&node1, new_node.prev);
+    TEST_ASSERT_EQUAL_PTR(&list.head, node1.prev);
+}
+
+void test_dlist_insert_before_single_element_list(void)
+{
+    mlg_dlist_t list;
+    mlg_dlist_init(&list);
+
+    mlg_dlist_node_t node1, new_node;
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_push_back(&list, &node1));
+
+    TEST_ASSERT_EQUAL(MLG_OK, mlg_dlist_insert_before(&new_node, &node1));
+
+    TEST_ASSERT_EQUAL_PTR(&new_node, list.head.next);
+    TEST_ASSERT_EQUAL_PTR(&node1, new_node.next);
+    TEST_ASSERT_EQUAL_PTR(&list.head, node1.next);
+
+    /* reverse chain */
+    TEST_ASSERT_EQUAL_PTR(&node1, list.head.prev);
+    TEST_ASSERT_EQUAL_PTR(&new_node, node1.prev);
+    TEST_ASSERT_EQUAL_PTR(&list.head, new_node.prev);
+}
+
 void test_dlist_remove_multiple(void)
 {
     mlg_dlist_t list;
@@ -168,6 +350,15 @@ int main(void)
     RUN_TEST(test_dlist_push_back_multiple);
     RUN_TEST(test_dlist_push_front_single);
     RUN_TEST(test_dlist_push_front_multiple);
+    RUN_TEST(test_dlist_insert_after);
+    RUN_TEST(test_dlist_insert_before);
+    /* insertion boundary cases */
+    RUN_TEST(test_dlist_insert_after_at_tail);
+    RUN_TEST(test_dlist_insert_before_at_head);
+    RUN_TEST(test_dlist_insert_after_sentinel_matches_push_front);
+    RUN_TEST(test_dlist_insert_before_sentinel_matches_push_back);
+    RUN_TEST(test_dlist_insert_after_single_element_list);
+    RUN_TEST(test_dlist_insert_before_single_element_list);
     /* deletion tests */
     RUN_TEST(test_dlist_remove_multiple);
     /* iteration tests */
