@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <string.h>
 
 #include "malgos/common/types.h"
 #include "malgos/intrusive/hashtable.h"
@@ -13,7 +12,10 @@ mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_head_t *bu
 
     hash_table->size = size;
     hash_table->buckets = buckets;
-    memset(hash_table->buckets, 0, size * sizeof(*hash_table->buckets));
+    for (size_t i = 0; i < size; i++)
+    {
+        hash_table->buckets[i].first = NULL;
+    }
     return MLG_OK;
 }
 
