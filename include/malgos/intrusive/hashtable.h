@@ -1,6 +1,10 @@
 #ifndef MLG_INTRUSIVE_HASHTABLE_H
 #define MLG_INTRUSIVE_HASHTABLE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -44,4 +48,9 @@ mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *
 mlg_error_t mlg_hashtable_remove(mlg_hash_node_t *node);
 mlg_error_t mlg_hashtable_rehash(mlg_hash_table_t *old_table, mlg_hash_table_t *new_table, mlg_hash_key_cb key_cb);
 
-#endif // MLG_INTRUSIVE_HASHTABLE_H
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* MLG_INTRUSIVE_HASHTABLE_H */

@@ -1,6 +1,10 @@
 #ifndef MLG_DLIST_H
 #define MLG_DLIST_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #include "malgos/common/types.h"
 
 #define mlg_dlist_for_each(pos, dlist) for ((pos) = (dlist)->head.next; (pos) != &(dlist)->head; (pos) = (pos)->next)
@@ -29,4 +33,8 @@ mlg_error_t mlg_dlist_remove(mlg_dlist_node_t *node);
 mlg_error_t mlg_dlist_insert_after(mlg_dlist_node_t *node, mlg_dlist_node_t *after);
 mlg_error_t mlg_dlist_insert_before(mlg_dlist_node_t *node, mlg_dlist_node_t *before);
 
-#endif // MLG_DLIST_H
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* MLG_DLIST_H */
