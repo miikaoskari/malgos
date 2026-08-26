@@ -9,6 +9,7 @@ if(PROJECT_IS_TOP_LEVEL)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
     option(MALGOS_ENABLE_SANITIZERS "enable asan and ubsan" OFF)
+    option(MALGOS_BUILD_BENCHMARKS "build benchmarks (requires a cpp compiler)" OFF)
 endif()
 
 add_subdirectory(src)
@@ -41,5 +42,10 @@ if(PROJECT_IS_TOP_LEVEL)
     include(CTest)
     if(BUILD_TESTING)
         add_subdirectory(tests)
+    endif()
+
+    if(MALGOS_BUILD_BENCHMARKS)
+        enable_language(CXX)
+        add_subdirectory(bench)
     endif()
 endif()
