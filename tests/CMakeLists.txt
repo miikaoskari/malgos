@@ -23,7 +23,7 @@ foreach(source IN LISTS tests)
             unity
     )
 
-    if(ENABLE_SANITIZERS)
+    if(MALGOS_ENABLE_SANITIZERS)
         target_compile_options(${name} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
         target_link_options(${name} PRIVATE -fsanitize=address,undefined)
     endif()
