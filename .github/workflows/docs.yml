@@ -8,9 +8,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: miikaoskari/mkcdoc@v1
+      - uses: miikaoskari/mkcdoc@v2
         with:
           config: mkcdoc.toml
 
