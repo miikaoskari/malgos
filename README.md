@@ -11,6 +11,7 @@ api is still unstable and subject to change.
 - containers
   - intrusive hashtable
   - intrusive doubly linked list
+  - intrusive singly linked list
 
 ## footprint
 
