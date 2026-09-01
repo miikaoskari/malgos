@@ -11,7 +11,7 @@ extern "C" {
 #include "malgos/common/types.h"
 
 #define mlg_hash_for_each_possible(pos, hash_table, hash)                                                              \
-    for ((pos) = (hash_table)->buckets[(hash) % (hash_table)->size].first; (pos) != NULL; (pos) = (pos)->next)
+    for ((pos) = (hash_table)->buckets[(hash) & (hash_table)->size - 1].first; (pos) != NULL; (pos) = (pos)->next)
 
 #define mlg_hash_for_each(pos, hash_table, bkt)                                                                        \
     for ((bkt) = 0; (bkt) < (hash_table)->size; (bkt)++)                                                               \

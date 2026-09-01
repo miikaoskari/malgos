@@ -1,11 +1,11 @@
-#include <stdint.h>
-
-#include "malgos/common/types.h"
 #include "malgos/intrusive/hashtable.h"
+#include "malgos/common/types.h"
+
+#define is_power_of_2(x) ((x) != 0 && (((x) & ((x) - 1)) == 0))
 
 mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_head_t *buckets, size_t size)
 {
-    if (!hash_table || size == 0 || !buckets)
+    if (!hash_table || size == 0 || !buckets || !is_power_of_2(size))
     {
         return MLG_ERROR;
     }
@@ -26,7 +26,7 @@ mlg_error_t mlg_hashtable_insert(mlg_hash_table_t *hash_table, mlg_hash_node_t *
         return MLG_ERROR;
     }
 
-    size_t idx = key % hash_table->size;
+    size_t idx = key & (hash_table->size - 1);
     mlg_hash_head_t *head = &hash_table->buckets[idx];
 
     mlg_hash_node_t *first = head->first;
