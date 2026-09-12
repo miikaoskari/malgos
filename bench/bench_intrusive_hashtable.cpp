@@ -40,6 +40,11 @@ static void BM_HashtableInsert(benchmark::State &state)
     {
         state.PauseTiming();
         mlg_hashtable_init(&table, buckets.data(), kSize);
+        /* the previous iteration left every node linked; insert only accepts unlinked nodes */
+        for (size_t i = 0; i < kSize; i++)
+        {
+            mlg_hashtable_node_init(&data[i].node);
+        }
         state.ResumeTiming();
 
         for (size_t i = 0; i < kSize; i++)
@@ -70,10 +75,10 @@ static void BM_HashtableLookupChain(benchmark::State &state)
     size_t key = 0;
     for (auto _ : state)
     {
-        mlg_hash_node_t *pos;
-        mlg_hash_for_each_possible(pos, &table, key)
+        userdata_t *entry;
+        mlg_hash_for_each_possible(&table, entry, node, key)
         {
-            benchmark::DoNotOptimize(pos);
+            benchmark::DoNotOptimize(entry);
         }
         key = (key + 1) % kBuckets;
     }
@@ -129,6 +134,8 @@ static void BM_HashtableRehash(benchmark::State &state)
         for (size_t i = 0; i < kSize; i++)
         {
             data[i].key = i;
+            /* the previous iteration left every node linked into dst_table */
+            mlg_hashtable_node_init(&data[i].node);
             mlg_hashtable_insert(&src_table, &data[i].node, i);
         }
         state.ResumeTiming();
