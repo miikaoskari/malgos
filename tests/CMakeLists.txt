@@ -10,6 +10,7 @@ FetchContent_MakeAvailable(unity)
 set(tests
     test_intrusive_hashtable.c
     test_intrusive_dlist.c
+    test_intrusive_slist.c
 )
 
 foreach(source IN LISTS tests)
