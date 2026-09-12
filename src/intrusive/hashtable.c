@@ -3,7 +3,7 @@
 
 #define is_power_of_2(x) ((x) != 0 && (((x) & ((x) - 1)) == 0))
 
-mlg_error_t static inline mlg_is_table_valid(mlg_hash_table_t *hash_table)
+static inline mlg_error_t mlg_is_table_valid(mlg_hash_table_t *hash_table)
 {
     if(!hash_table || !hash_table->buckets || !hash_table->size)
     {
