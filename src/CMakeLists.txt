@@ -5,6 +5,7 @@ target_sources(malgos
     PRIVATE
         intrusive/hashtable.c
         intrusive/dlist.c
+        intrusive/slist.c
 )
 
 target_include_directories(malgos
