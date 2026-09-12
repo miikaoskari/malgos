@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.21)
 project(malgos C)
 
 if(PROJECT_IS_TOP_LEVEL)
+    if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+        set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+    endif()
+
     set(CMAKE_C_STANDARD 23)
     set(CMAKE_C_STANDARD_REQUIRED ON)
     set(CMAKE_C_EXTENSIONS OFF)
@@ -27,6 +31,8 @@ if(PROJECT_IS_TOP_LEVEL)
                 -Wall
                 -Wextra
                 -Wpedantic
+                -Wshadow
+                -Werror
             >
 
             $<$<C_COMPILER_ID:MSVC>:
