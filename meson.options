@@ -1,0 +1,20 @@
+option(
+    'test',
+    type: 'feature',
+    value: 'auto',
+    description: 'build the Unity-based unit tests',
+)
+
+option(
+    'bench',
+    type: 'feature',
+    value: 'disabled',
+    description: 'build the google-benchmark based benchmarks (requires a C++ compiler)',
+)
+
+option(
+    'fuzz',
+    type: 'feature',
+    value: 'disabled',
+    description: 'build the libFuzzer-based fuzz targets (requires clang)',
+)

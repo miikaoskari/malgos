@@ -79,5 +79,11 @@ build/
 .DS_Store
 ._.DS_Store
 
+# Meson
+builddir*/
+subprojects/*/
+subprojects/packagecache/
+!subprojects/packagefiles/
+
 # documentation
 site/
