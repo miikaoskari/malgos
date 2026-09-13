@@ -1,0 +1,53 @@
+name: Meson
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations.
+      fail-fast: false
+
+      # The public headers use GNU statement expressions and typeof, so the
+      # matrix only covers compilers that accept them.
+      matrix:
+        os: [ubuntu-latest]
+        buildtype: [release]
+        c_compiler: [gcc, clang]
+
+    env:
+      CC: ${{ matrix.c_compiler }}
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - uses: actions/setup-python@v7
+      with:
+        python-version: '3.x'
+
+    - name: Install meson and ninja
+      run: |
+        pipx install meson
+        pipx install ninja
+
+    - name: Configure
+      run: meson setup build --buildtype=${{ matrix.buildtype }} -Dtest=enabled
+
+    - name: Build
+      run: meson compile -C build
+
+    - name: Test
+      run: meson test -C build --print-errorlogs
+
+    - name: Upload test logs
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: testlog-${{ matrix.os }}-${{ matrix.c_compiler }}-${{ matrix.buildtype }}
+        path: build/meson-logs/
