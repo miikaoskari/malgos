@@ -52,6 +52,23 @@ void *mlg_arena_alloc(mlg_arena_t *arena, size_t size, size_t alignment)
     return arena->base + start;
 }
 
+void *mlg_arena_alloc_zero(mlg_arena_t *arena, size_t size, size_t alignment)
+{
+    void *p = mlg_arena_alloc(arena, size, alignment);
+
+    if (p)
+    {
+        unsigned char *pp = p;
+        for (size_t i = 0; i < size; i++)
+        {
+            pp[i] = 0;
+        }
+
+    }
+
+    return p;
+}
+
 mlg_error_t mlg_arena_reset(mlg_arena_t *arena)
 {
     if (!arena)
