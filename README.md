@@ -12,6 +12,8 @@ api is still unstable and subject to change.
   - intrusive hashtable
   - intrusive doubly linked list
   - intrusive singly linked list
+- allocators
+  - arena
 
 ## footprint
 
@@ -19,23 +21,33 @@ compiled with `-Os` on Apple clang version 21.0.0 (clang-2100.1.1.101) for arm64
 
 | module | text | total object size |
 |---|---|---|
-| hashtable | 424 B | 552 B |
+| hashtable | 480 B | 640 B |
 | dlist | 252 B | 444 B |
 
 ## building
 
-to build the project:
+the project builds with either meson or cmake.
+
+with meson:
 ```bash
-cmake -B build -S .
-cmake --build build
+meson setup builddir
+meson compile -C builddir
 ```
 
 ## testing
 
 this project uses [Unity](https://github.com/ThrowTheSwitch/Unity) by ThrowTheSwitch.
 
-to run the unit tests first build the project and then run:
+to run the unit tests with meson:
 ```bash
-cd build
-ctest
+meson test -C builddir
+```
+
+## benchmarking
+
+benchmarks use [google benchmark](https://github.com/google/benchmark) and are off by default:
+```bash
+meson setup builddir-bench -Dbenchmarks=enabled
+meson compile -C builddir-bench
+./builddir-bench/bench/bench_intrusive_hashtable
 ```
