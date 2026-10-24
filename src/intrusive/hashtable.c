@@ -1,7 +1,6 @@
 #include "malgos/intrusive/hashtable.h"
 #include "malgos/common/types.h"
-
-#define is_power_of_2(x) ((x) != 0 && (((x) & ((x) - 1)) == 0))
+#include "malgos/common/alignment.h"
 
 static inline mlg_error_t mlg_is_table_valid(mlg_hash_table_t *hash_table)
 {
@@ -15,7 +14,7 @@ static inline mlg_error_t mlg_is_table_valid(mlg_hash_table_t *hash_table)
 
 mlg_error_t mlg_hashtable_init(mlg_hash_table_t *hash_table, mlg_hash_head_t *buckets, size_t size)
 {
-    if (!hash_table || size == 0 || !buckets || !is_power_of_2(size))
+    if (!hash_table || size == 0 || !buckets || !mlg_is_power_of_2(size))
     {
         return MLG_ERROR;
     }
