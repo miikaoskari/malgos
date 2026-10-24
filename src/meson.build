@@ -2,6 +2,7 @@ malgos_sources = files(
     'intrusive/hashtable.c',
     'intrusive/dlist.c',
     'intrusive/slist.c',
+    'allocators/arena.c',
 )
 
 malgos_lib = library(
