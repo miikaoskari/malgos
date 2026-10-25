@@ -5,6 +5,10 @@
 #ifndef MLG_ALLOCATORS_ARENA
 #define MLG_ALLOCATORS_ARENA
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #include "malgos/common/types.h"
 #include <stddef.h>
 #include <stdint.h>
@@ -32,5 +36,9 @@ mlg_arena_mark_t mlg_arena_mark(const mlg_arena_t *arena);
 void mlg_arena_rewind(mlg_arena_t *arena, mlg_arena_mark_t *mark);
 size_t mlg_arena_used(const mlg_arena_t *arena);
 size_t mlg_arena_remaining(const mlg_arena_t *arena);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* MLG_ALLOCATORS_ARENA */
