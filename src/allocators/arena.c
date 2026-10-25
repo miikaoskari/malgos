@@ -82,6 +82,38 @@ mlg_error_t mlg_arena_reset(mlg_arena_t *arena)
     return MLG_OK;
 }
 
+mlg_arena_mark_t mlg_arena_mark(const mlg_arena_t *arena)
+{
+    mlg_arena_mark_t mark;
+    mark.offset = 0;
+
+    if (!arena)
+    {
+        return mark;
+    }
+
+    mark.offset = arena->offset;
+
+    return mark;
+}
+
+void mlg_arena_rewind(mlg_arena_t *arena, mlg_arena_mark_t *mark)
+{
+    if (!arena || !mark )
+    {
+        return;
+    }
+
+    /* prevent going out of bounds */
+    if (mark->offset > arena->capacity)
+    {
+        return;
+    }
+
+    arena->offset = mark->offset;
+    return;
+}
+
 size_t mlg_arena_used(const mlg_arena_t *arena)
 {
     if (!arena)
