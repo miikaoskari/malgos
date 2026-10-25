@@ -21,7 +21,8 @@ mlg_error_t mlg_arena_init(mlg_arena_t *arena, void *buf, size_t size)
 
 void *mlg_arena_alloc(mlg_arena_t *arena, size_t size, size_t alignment)
 {
-    if (!arena || !size || !alignment)
+    /* size 0 always succeeds */
+    if (!arena || !alignment)
     {
         return NULL;
     }
@@ -79,5 +80,25 @@ mlg_error_t mlg_arena_reset(mlg_arena_t *arena)
     arena->offset = 0;
 
     return MLG_OK;
+}
+
+size_t mlg_arena_used(const mlg_arena_t *arena)
+{
+    if (!arena)
+    {
+        return 0;
+    }
+
+    return arena->offset;
+}
+
+size_t mlg_arena_remaining(const mlg_arena_t *arena)
+{
+    if (!arena || arena->offset > arena->capacity)
+    {
+        return 0;
+    }
+
+    return arena->capacity - arena->offset;
 }
 
