@@ -48,15 +48,12 @@ void test_hashtable_insert(void)
 void test_hashtable_insert_invalid_table(void)
 {
     userdata_t data = {0};
-    mlg_hash_head_t buckets[8];
-    mlg_hash_table_t table;
     mlg_error_t error = mlg_hashtable_insert(NULL, &data.node, 1);
     TEST_ASSERT_EQUAL(MLG_ERROR, error);
 }
 
 void test_hashtable_insert_invalid_node(void)
 {
-    userdata_t data = {0};
     mlg_hash_head_t buckets[8];
     mlg_hash_table_t table;
     mlg_hashtable_init(&table, buckets, 8);
